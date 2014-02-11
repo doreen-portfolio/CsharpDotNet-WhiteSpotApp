@@ -1,0 +1,12 @@
+﻿@*Author: Aaron
+    Shows 5 more Action Items in a partial view*@
+
+@Ajax.ActionLink("Show More",
+    "ShowMore",
+    new { loc = @Session["loc"] },
+    new AjaxOptions
+    {
+        HttpMethod = "POST",
+        UpdateTargetId = "completeActionItems",
+        InsertionMode = InsertionMode.Replace
+    })

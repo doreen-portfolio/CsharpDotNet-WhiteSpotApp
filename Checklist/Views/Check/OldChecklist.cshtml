@@ -1,0 +1,187 @@
+﻿@model Checklist.Models.AnswerForm
+@Styles.Render("~/Content/Site.css")
+
+@*Author: Clayton
+  Modified by: Aaron, Doreen, Jung
+    A previous checklist that can be edited and resent.*@
+
+<h2>@ViewBag.Message</h2>
+
+@{
+    bool edit = true;
+
+    if (User.Identity.Name == "admin")
+    {
+        edit = false;
+    }
+}
+
+<script>
+    function leaveConfirm() {
+        var r = confirm("If you leave the page you may lose your changes");
+
+        if (r == false) {
+            return false;
+        }
+    }
+</script>
+
+
+@using (Html.BeginForm("LocationInfo", "Check", new { locationId = Model.LocationId }))
+{
+    <button onclick="return leaveConfirm();" type="submit">Back to Location Info</button>
+}
+
+
+@using (Html.BeginForm("PreviousChecklists", "Check", new { locationId = Model.LocationId }))
+{
+    <button onclick="return leaveConfirm();" type="submit">Back to Previous Checklists</button>
+}
+
+
+<table>
+    <tr>
+        <td>Date of Visit:@Model.DateCreated.ToString("MM/dd/yyyy")</td>
+        @if (Model.DateModified.Year > 1000)
+        {
+            <td>Last Modified:@Model.DateModified.ToString("MM/dd/yyyy")</td>
+        }
+    </tr>
+    
+    @{Model.DateModified = DateTime.Now;}
+
+    @Html.HiddenFor(m => m.DateModified)
+
+    <tr>
+        <td>Business Consultant: @User.Identity.Name </td>
+        <td>Restaurant: @ViewBag.Location</td>
+    </tr>
+</table>
+
+
+@using (Html.BeginForm("SendConfirmation", "Check"))
+{
+    <table>
+        <tr>
+            @if (edit)
+            {
+                <td>Manager on Duty: @Html.EditorFor(m => m.ManagerOnDuty)</td>
+                <td>General Manager: @Html.EditorFor(m => m.GeneralManager)</td>
+            }
+            else
+            {
+                <td>Manager on Duty: @Html.DisplayFor(m => m.ManagerOnDuty)</td>
+                <td>General Manager: @Html.DisplayFor(m => m.GeneralManager)</td>
+            }
+        </tr>
+    </table>
+
+    
+    @Html.HiddenFor(m => m.LocationId, Model.LocationId);
+    @Html.HiddenFor(m => m.FormId, Model.FormId);
+    @Html.HiddenFor(m => m.DateModified, Model.DateModified);
+    @Html.HiddenFor(m => m.SiteVisitId, Model.SiteVisitId);
+   
+    <table id="list">
+        @{int previous = -1;}
+        @foreach (var ans in Model.AnswerList)
+        {
+            if (ans.Question == null)
+            {
+                continue;
+            }
+
+            if (ans.Question.SectionID != previous)
+            {
+                previous = ans.Question.SectionID;
+            <tr>
+                <td>
+                    <h2>@ans.SectionName</h2>
+                </td>
+                <td>Poor</td>
+                <td>Good</td>
+                <td>Excellent</td>
+                <td>N/A</td>
+                <td>Comments:</td>
+            </tr>
+            }
+            
+            <tr>
+
+                @{int x = ans.Question.QuestionID - 1;}
+                @Html.HiddenFor(m => m.AnswerList[x].QuestionId, ans.QuestionId)
+                <td>@ans.Question.QuestionName</td>
+                @if (edit)
+                {
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 1)</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 2)</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 3)</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 4)</td>
+                }
+                else
+                {
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 1, new { disabled = "true" })</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 2, new { disabled = "true" })</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 3, new { disabled = "true" })</td>
+                    <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 4, new { disabled = "true" })</td>
+                }
+
+                @if (edit)
+                {
+                    <td>@Html.EditorFor(m => m.AnswerList[x].Comment)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(m => m.AnswerList[x].Comment)</td>
+                }
+            </tr>
+        }
+    </table>
+    
+    <h2>Action Items Created this Visit</h2>
+
+    
+    
+        for (int i = 0; i < 5; ++i)
+        {
+                if (Model.ActionItems[i].Description == null)
+                {
+                    continue;
+                }
+                
+    @Html.DisplayFor(m => m.ActionItems[i].Description)
+    <br />
+        }
+    
+    
+    
+    <h2>Public Comments</h2>
+        if (edit)
+        {
+    @Html.TextAreaFor(m => m.PublicComment, new { rows = "8", cols = "700" })
+        }
+        else
+        { 
+    @Html.DisplayFor(m => m.PublicComment)
+        }
+                                                                                       
+        
+    <h2>Private Comments</h2>
+        if (edit)
+        {
+    @Html.TextAreaFor(m => m.PrivateComment, new { rows = "8", cols = "700" })
+        }
+        else
+        {
+    @Html.DisplayFor(m => m.PrivateComment)
+        }
+    <br />
+        if (edit)
+        {
+    <button type="submit">Send</button>
+        }
+        else
+        {   
+    <br />
+        }
+}

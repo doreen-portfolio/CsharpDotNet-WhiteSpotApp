@@ -1,0 +1,117 @@
+﻿@model Checklist.Models.AnswerForm
+@Styles.Render("~/Content/Site.css")
+
+@*Author: Clayton
+  Modified by: Aaron, Aleeza, Doreen, Jung
+    A checklist that has questions to be answered
+    with radio buttons and optional text comments,
+    a place to add action items and overall public
+    or private comments.*@
+
+<h2>@ViewBag.Message</h2>
+
+@*Warning for leaving the page*@
+<script>
+    function leaveConfirm() {
+        var r = confirm("If you leave the page you may lose your changes");
+
+        if (r == false) {
+            return false;
+        }
+    }
+</script>
+
+@*Begining of the checklist*@
+@using (Html.BeginForm("LocationInfo", "Check", new { locationId = Model.LocationId }))
+{
+    <button onclick="return leaveConfirm();" type="submit">Back to Location Info</button>
+}
+
+@using (Html.BeginForm("SendConfirmation", "Check"))
+{
+    <table>
+        <tr>
+            <td>Date: @Html.TextBoxFor(m => m.DateCreatedString, new { id = "datepicker" })</td>
+            <td>Business Consultant: @User.Identity.Name </td>
+        </tr>
+        <tr>
+            <td>Restaurant: @ViewBag.Location</td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>Manager on Duty: @Html.EditorFor(m => m.ManagerOnDuty)</td>
+            <td>General Manager: @Html.EditorFor(m => m.GeneralManager)</td>
+        </tr>
+    </table>
+
+    
+    @Html.HiddenFor(m => m.LocationId, Model.LocationId);
+    @Html.HiddenFor(m => m.FormId, Model.FormId);
+    @Html.HiddenFor(m => m.SiteVisitId);
+   
+    <table id="list">
+        @{int previous = -1;}
+        @foreach (var ans in Model.AnswerList)
+        {
+            if (ans.Question == null)
+            {
+                continue;
+            }
+
+            if (ans.Question.SectionID != previous)
+            {
+                previous = ans.Question.SectionID;
+            <tr>
+                <td>
+                    <h2>@ans.SectionName</h2>
+                </td>
+                <td>Poor</td>
+                <td>Good</td>
+                <td>Excellent</td>
+                <td>N/A</td>
+                <td>Comments:</td>
+            </tr>
+            }
+            
+            <tr>
+
+                @{
+            int x = ans.SiteAnswerId;
+                }
+                @Html.HiddenFor(m => m.AnswerList[x].QuestionId, ans.QuestionId)
+                <td>@ans.Question.QuestionName</td>
+                <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 1)</td>
+                <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 2)</td>
+                <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 3)</td>
+                <td>@Html.RadioButtonFor(m => m.AnswerList[x].Value, 4)
+                    @Html.ValidationMessageFor(m => m.AnswerList[x].Value)</td>
+                <td>@Html.EditorFor(m => m.AnswerList[x].Comment)</td>
+            </tr>
+        }
+    </table>
+    
+    <h2>Previous Action Items</h2>
+    <div id="actionItem">
+        @Html.Action("CompleteActionNew", Model.LocationId)
+    </div>
+    
+    <h2>Add New Action Items</h2>
+    
+        for (int i = 0; i < 5; ++i)
+        {
+    @Html.EditorFor(m => m.ActionItems[i].Description)
+    <br />
+        }
+    
+
+    <h2>Public Comments</h2>
+    @Html.TextAreaFor(m => m.PublicComment, new { rows = "8", cols = "700" })
+
+    <h2>Private Comments</h2>
+    @Html.TextAreaFor(m => m.PrivateComment, new { rows = "8", cols = "700" })
+
+    <br />
+    <button type="submit">Send</button>
+}

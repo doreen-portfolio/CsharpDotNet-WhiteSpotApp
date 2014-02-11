@@ -1,0 +1,7 @@
+﻿@model Checklist.Models.SiteActionItem
+
+@*Author: Aaron
+    Partial view that displays the 
+    input row for Action Items.*@
+
+@Ajax.ActionLink("Complete", "AjaxFinish", new { actID = Model.ActionID, locID = Model.LocationID }, new AjaxOptions { UpdateTargetId = "actionItem" })

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Checklist.Models.SiteActionItem>
+
+@*Author: Aaron
+    Diplays completed Action Items in a partial view.*@
+
+@Ajax.ActionLink("Hide Completed Action Items", "HideAction", new AjaxOptions
+{
+    HttpMethod = "POST",
+    UpdateTargetId = "completeActionItems",
+    InsertionMode = InsertionMode.Replace
+})
+
+<table>
+    <tr>
+        <td>Action</td>
+        <td>Created</td>
+        <td>Completed</td>
+    </tr>
+    @foreach (var item in Model.Take((int)Session["count"]))
+    {
+        <tr>
+            <td>@item.Description</td>
+            <td>@item.DateCreated.ToString("MM/dd/yyyy")</td>
+            @if (item.DateComplete != null)
+            {
+                var temp = (DateTime)item.DateComplete;
+                <td>@temp.ToString("MM/dd/yyyy")</td>
+            }
+        </tr>
+    }
+</table>
+@Html.Partial("_ShowMore") @*Shows 5 more completed Action Items*@

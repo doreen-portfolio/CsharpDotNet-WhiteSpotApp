@@ -1,0 +1,16 @@
+﻿@*Author: Aleeza
+  Modified by: Aaron
+    Partial view that displays 
+    the completed Action Items.*@
+
+<div id="completeActionItems">
+    @Ajax.ActionLink("Show Completed Action Items",
+        "CompleteAction",
+        new { loc = @Session["loc"] },
+        new AjaxOptions
+        {
+            HttpMethod = "POST",
+            UpdateTargetId = "completeActionItems",
+            InsertionMode = InsertionMode.Replace
+        })
+</div>

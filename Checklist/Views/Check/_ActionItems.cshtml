@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Checklist.Models.SiteActionItem>
+
+@*Author: Aaron
+  Modified by: Aleeza
+    Partial view for completing Action Items.*@
+
+<div id="addActionItem">
+            @foreach (var item in Model) {
+                using(Ajax.BeginForm("ActionItemComplete", new AjaxOptions {UpdateTargetId = "addActionItem"})) {
+                    @Html.AntiForgeryToken()
+                    @Html.Action("ListAction", new {actionItem = item })
+                }
+            }
+    @using(Ajax.BeginForm("ActionItemSubmit", new AjaxOptions {UpdateTargetId = "addActionItem"})) {
+            @Html.AntiForgeryToken()
+        @Html.Action("CreateAction", new { loc = @Session["loc"] })
+    }
+</div>

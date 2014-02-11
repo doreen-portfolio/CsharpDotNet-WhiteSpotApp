@@ -1,0 +1,32 @@
+﻿@model Checklist.Models.ViewModel
+
+@*Author: Clayton
+  Modified by: Aaron, Aleeza
+    Displays all the locations the user
+    has access to.*@
+
+<h2>@ViewBag.Message</h2>
+
+<table>
+    <tr>
+        <td>Location</td>
+        <td>Last Visit</td>
+    </tr>
+    @foreach (var q in Model.ViewList)
+    {
+        using (Html.BeginForm("LocationInfo", "Check", new { locationId = q.Location.LocationId }))
+        {
+        <tr>
+            <td>
+                <button type="submit">@q.Location.LocationName</button>
+            </td>
+            @if(q.LastVisit.Year > 1000)
+            {
+            <td>
+                @q.LastVisit.ToString("MM/dd/yyyy") 
+            </td>
+            }
+        </tr>
+        }
+    }
+</table>

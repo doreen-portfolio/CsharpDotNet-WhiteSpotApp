@@ -1,0 +1,15 @@
+﻿@model Checklist.Models.SiteActionItem
+
+@*Author: Aaron
+  Modified by: Aleeza
+    Partial view for incomplete Action Items.*@
+
+@Html.HiddenFor(m => m.ActionID)
+@Html.HiddenFor(m => m.LocationID)
+
+@*Displays Complete button, date created and description*@
+<button type="submit">Complete</button>
+&nbsp&nbsp&nbsp
+@Model.DateCreated.ToString("MM/dd/yyyy")
+&nbsp&nbsp&nbsp
+@Html.DisplayFor(m => m.Description)

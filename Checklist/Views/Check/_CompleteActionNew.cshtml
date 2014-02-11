@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Checklist.Models.SiteActionItem>
+
+@*Author: Aleeza
+  Modified by: Aaron
+    Partial view to add Action Items.*@
+
+<table>
+    @foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Description</td>
+            <td>@item.DateCreated.ToString("MM/dd/yyyy")</td>
+            @if(User.Identity.Name != "admin")
+        {
+                <td>@Html.Action("ActionRow", new { actionItem = item })</td>
+        }
+        </tr>
+}
+
+</table>
